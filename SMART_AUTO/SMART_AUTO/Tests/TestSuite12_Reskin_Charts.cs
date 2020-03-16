@@ -103,6 +103,7 @@ namespace SMART_AUTO.SMART_AUTO
 
                 homePage.newVerifyHomePage();
                 homePage.VerifyAccountOrSwitchIfRequired("QA Testing - Brand");
+                searchPage.VerifyAndLoadSpecificSavedSearch("New Search", true, true);
                 charts.VerifyCharts();
                 charts.updateAndVerifyLegendsInCharts(true);
             }
@@ -382,6 +383,12 @@ namespace SMART_AUTO.SMART_AUTO
                 homePage.newVerifyHomePage();
                 homePage.VerifyAccountOrSwitchIfRequired("QA Testing - Brand Monthly");
                 homePage.selectOptionFromSideNavigationBar("4. Ad Ex Trend - Yearly");
+                summaryTags.clickOnSingleSummaryTag("Last Year");
+                searchPage.VerifyNewDateRangeSectionOnScreen("Last Year");
+                searchPage.selectNewDateRangeOptionFromSection("Custom Range");
+                searchPage.setCustomDateRange("01/01/2018", "", true);
+                searchPage.clickButtonOnSearchOptions("Apply");
+                homePage.newVerifyHomePage();
                 charts.VerifyCharts(false);
                 string[,] dataGrid1 = charts.captureDataFromChart("");
                 pivotGrid.selectValueFromPivotGrid();
@@ -410,6 +417,12 @@ namespace SMART_AUTO.SMART_AUTO
                 homePage.newVerifyHomePage();
                 homePage.VerifyAccountOrSwitchIfRequired("QA Testing - Brand Monthly");
                 homePage.selectOptionFromSideNavigationBar("4. Ad Ex Trend - Yearly");
+                summaryTags.clickOnSingleSummaryTag("Last Year");
+                searchPage.VerifyNewDateRangeSectionOnScreen("Last Year");
+                searchPage.selectNewDateRangeOptionFromSection("Custom Range");
+                searchPage.setCustomDateRange("01/01/2018", "", true);
+                searchPage.clickButtonOnSearchOptions("Apply");
+                homePage.newVerifyHomePage();
                 charts.VerifyCharts(false);
                 string[,] dataGrid1 = charts.captureDataFromChart("");
                 pivotGrid.VerifyPivotOptionsPopup();

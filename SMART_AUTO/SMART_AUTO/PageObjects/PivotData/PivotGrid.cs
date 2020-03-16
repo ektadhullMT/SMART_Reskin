@@ -1074,10 +1074,10 @@ namespace SMART_AUTO
             Assert.IsTrue(driver._waitForElement("xpath", "//cft-domain-item-group//div[@class='ag-body-viewport']//div[contains(@col-id,'advertiserName')]"), "Values not present in AgGrid.");
             IList<IWebElement> gridValueCol = driver._findElements("xpath", "//cft-domain-item-group//div[@class='ag-body-viewport']//div[contains(@col-id,'advertiserName')]");
             bool avail = true;
-            foreach (IWebElement gridValue in gridValueCol)
+            for (int i = 0; i < 10; i++)
             {
-                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", gridValue);
-                if (!gridValue.Text.ToLower().Contains(filterValue.ToLower()))
+                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", gridValueCol[i]);
+                if (!gridValueCol[i].Text.ToLower().Contains(filterValue.ToLower()))
                 {
                     avail = false;
                     break;
@@ -1098,10 +1098,10 @@ namespace SMART_AUTO
                 Assert.IsTrue(driver._waitForElement("xpath", "//cft-domain-item-group//div[@class='ag-body-viewport']//div[contains(@col-id,'advertiserName')]"), "Values not present in AgGrid.");
                 gridValueCol = driver._findElements("xpath", "//cft-domain-item-group//div[@class='ag-body-viewport']//div[contains(@col-id,'advertiserName')]");
                 avail = true;
-                foreach (IWebElement gridValue in gridValueCol)
+                for (int i = 0; i < 10; i++)
                 {
-                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", gridValue);
-                    if (!gridValue.Text.ToLower().Contains(filterValue.ToLower()))
+                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", gridValueCol[i]);
+                    if (!gridValueCol[i].Text.ToLower().Contains(filterValue.ToLower()))
                     {
                         avail = false;
                         break;

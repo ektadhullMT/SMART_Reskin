@@ -194,6 +194,8 @@ namespace SMART_AUTO
                 Random rand = new Random();
                 columnIndex = rand.Next(0, columnHeaderColl.Count);
                 column = columnHeaderColl[columnIndex].Text;
+                if (column.ToLower().Contains("date"))
+                    column = columnHeaderColl[columnIndex + 1].Text;
             }
             else
             {

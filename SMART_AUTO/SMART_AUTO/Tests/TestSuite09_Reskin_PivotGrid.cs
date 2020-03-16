@@ -498,7 +498,7 @@ namespace SMART_AUTO.SMART_AUTO
                 homePage.VerifyAccountOrSwitchIfRequired("QA Testing - Brand Canada");
                 homePage.selectOptionFromSideNavigationBar("Print Report by Media");
                 charts.VerifyPivotTable();
-                pivotGrid.VerifyFilterAppliedOnTableGridViewBySelectingPivotGridCell("HONDA CONSOLIDATED LOCAL CR DLRSHPS");
+                pivotGrid.VerifyFilterAppliedOnTableGridViewBySelectingPivotGridCell("HORNBY MANAGEMENT INC");
             }
             catch (Exception e)
             {
@@ -598,7 +598,7 @@ namespace SMART_AUTO.SMART_AUTO
                 homePage.VerifyAccountOrSwitchIfRequired("QA Testing - Brand Canada");
                 homePage.selectOptionFromSideNavigationBar("Print Report by Media");
                 charts.VerifyPivotTable();
-                pivotGrid.VerifyFilterAppliedOnTableGridViewBySelectingPivotGridCell("HONDA CONSOLIDATED LOCAL CR DLRSHPS", true);
+                pivotGrid.VerifyFilterAppliedOnTableGridViewBySelectingPivotGridCell("HORNBY MANAGEMENT INC", true);
             }
             catch (Exception e)
             {

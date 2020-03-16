@@ -205,7 +205,7 @@ namespace SMART_AUTO
                 if (fromCarousel)
                 {
                     if (occurrence)
-                        tabs = "View Ad,Occurrence,More Details";
+                        tabs = "View Ad,More Details";
                     else
                         tabs = "View Ad,Markets,More Details,Download";
                 }

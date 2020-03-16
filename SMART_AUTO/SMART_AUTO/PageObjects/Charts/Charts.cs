@@ -244,7 +244,7 @@ namespace SMART_AUTO
                     dataGrid[0, i + 1] = chartLegendCollection[i].Text;
 
 
-                IList<IWebElement> barCollection = chart._findElementsWithinElement("xpath", ".//*[name()='rect' and @stroke='#FFFFFF']");
+                IList<IWebElement> barCollection = chart._findElementsWithinElement("xpath", ".//*[name()='rect' and @stroke='#FFFFFF' and @height>0]");
                 Assert.Less(0, barCollection.Count, "'" + chartTitle + "' doesn't have data represented properly.");
                 string xValues = ",";
                 for(int i = 0; i < barCollection.Count; i++)

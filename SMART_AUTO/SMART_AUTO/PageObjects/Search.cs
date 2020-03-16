@@ -1916,7 +1916,7 @@ namespace SMART_AUTO
         ///<param name="fromDate">Start Date</param>
         ///<param name="toDate">End Date</param>
         ///<returns></returns>
-        public Search setCustomDateRange(string fromDate, string toDate = "")
+        public Search setCustomDateRange(string fromDate, string toDate = "", bool onlyYear = false)
         {
             DateTime date1 = DateTime.Today;
             Assert.IsTrue(DateTime.TryParse(fromDate, out date1), "From Date Conversion Failed");
@@ -1929,148 +1929,157 @@ namespace SMART_AUTO
             string fromMonth = date1.ToString("MMM");
             string fromDay = iFromDay.ToString();
 
-
-            Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]"), "Year Field not present in First Calendar");
-            bool avail = false;
-            if (!driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(fromYear))
+            if (onlyYear)
             {
-                driver._click("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]");
-                Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option"), "From Year DDL not present");
-                IList<IWebElement> yearDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option");
-                foreach (IWebElement yearDDL in yearDDLCollection)
-                    if (yearDDL.Text.Contains(fromYear))
-                    {
-                        avail = true;
-                        yearDDL.Click();
-                        break;
-                    }
-                Assert.IsTrue(avail, "'" + fromYear + "' is too Old a date!");
+                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td"), "Year Field not present in First Calendar");
+                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[text()='" + fromYear + "']"), "'" + fromYear + "' Year too old");
+                driver._click("xpath", "//div[contains(@class, 'first')]//td[text()='" + fromYear + "']");
                 Thread.Sleep(1000);
-                Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(fromYear), "From Year was not set");
-            }
-
-            Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]"), "Month Field not present in First Calendar");
-            if (!driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(fromMonth))
-            {
-                driver._click("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]");
-                Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option"), "From Year DDL not present");
-                IList<IWebElement> monthDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option");
-                avail = false;
-                foreach (IWebElement monthDDL in monthDDLCollection)
-                    if (monthDDL.Text.Contains(fromMonth))
-                    {
-                        avail = true;
-                        monthDDL.Click();
-                        break;
-                    }
-                Assert.IsTrue(avail, "'" + fromMonth + "' not found");
-                Thread.Sleep(1000);
-                Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(fromMonth), "From Month was not set");
-            }
-
-            Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[contains(@class,'available') and not(contains(@class, 'off'))]"), "Days Selector not present in First Calendar");
-            if (!driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']") || (driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']") && !driver._getText("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']").Equals(fromDay)))
-            {
-                IList<IWebElement> daysCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//td[contains(@class,'available') and not(contains(@class, 'off'))]");
-                avail = false;
-                foreach (IWebElement day in daysCollection)
-                    if (day.Text.Contains(fromDay))
-                    {
-                        avail = true;
-                        day.Click();
-                        break;
-                    }
-                Assert.IsTrue(avail, "'" + fromDay + "' not found");
-                Thread.Sleep(1000);
-            }
-
-            DateTime date2 = DateTime.Today;
-            if (toDate.Equals(""))
-            {
-                toDate = date2.ToString("MM/dd/yyyy");
-                Console.WriteLine("toDate: " + toDate);
             }
             else
             {
-                Assert.IsTrue(DateTime.TryParse(toDate, out date2), "To Date Conversion Failed");
-                int iToYear = date1.Year;
-                int iToDay = date1.Day;
-
-                string toYear = iToYear.ToString();
-                string toMonth = date1.ToString("MMM");
-                string toDay = iToDay.ToString();
-
-                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]"), "Year Field not present in second Calendar");
-                if (!driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(toYear))
+                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]"), "Year Field not present in First Calendar");
+                bool avail = false;
+                if (!driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(fromYear))
                 {
-                    driver._click("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]");
-                    Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option"), "to Year DDL not present");
-                    IList<IWebElement> yearDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option");
-                    avail = false;
+                    driver._click("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]");
+                    Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option"), "From Year DDL not present");
+                    IList<IWebElement> yearDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option");
                     foreach (IWebElement yearDDL in yearDDLCollection)
-                        if (yearDDL.Text.Contains(toYear))
+                        if (yearDDL.Text.Contains(fromYear))
                         {
                             avail = true;
                             yearDDL.Click();
                             break;
                         }
-                    Assert.IsTrue(avail, "'" + toYear + "' is too Old a date!");
+                    Assert.IsTrue(avail, "'" + fromYear + "' is too Old a date!");
                     Thread.Sleep(1000);
-                    Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(toYear), "to Year was not set");
+                    Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(fromYear), "From Year was not set");
                 }
 
-                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]"), "Month Field not present in second Calendar");
-                if (!driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(toMonth))
+                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]"), "Month Field not present in First Calendar");
+                if (!driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(fromMonth))
                 {
-                    driver._click("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]");
-                    Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option"), "to Year DDL not present");
-                    IList<IWebElement> monthDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option");
+                    driver._click("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]");
+                    Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option"), "From Year DDL not present");
+                    IList<IWebElement> monthDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option");
                     avail = false;
                     foreach (IWebElement monthDDL in monthDDLCollection)
-                        if (monthDDL.Text.Contains(toMonth))
+                        if (monthDDL.Text.Contains(fromMonth))
                         {
                             avail = true;
                             monthDDL.Click();
                             break;
                         }
-                    Assert.IsTrue(avail, "'" + toMonth + "' not found");
+                    Assert.IsTrue(avail, "'" + fromMonth + "' not found");
                     Thread.Sleep(1000);
-                    Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(toMonth), "to Month was not set");
+                    Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'first')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(fromMonth), "From Month was not set");
                 }
 
-                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[contains(@class,'available') and not(contains(@class, 'off'))]"), "Days Selector not present in second Calendar");
-                if (!driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']") || (driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']") && !driver._getText("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']").Equals(toDay)))
+                Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[contains(@class,'available') and not(contains(@class, 'off'))]"), "Days Selector not present in First Calendar");
+                if (!driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']") || (driver._isElementPresent("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']") && !driver._getText("xpath", "//div[contains(@class, 'first')]//td[@class='available active start-date']").Equals(fromDay)))
                 {
-                    IList<IWebElement> daysCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//td[contains(@class,'available') and not(contains(@class, 'off'))]");
+                    IList<IWebElement> daysCollection = driver._findElements("xpath", "//div[contains(@class, 'first')]//td[contains(@class,'available') and not(contains(@class, 'off'))]");
                     avail = false;
                     foreach (IWebElement day in daysCollection)
-                        if (day.Text.Contains(toDay))
+                        if (day.Text.Contains(fromDay))
                         {
                             avail = true;
                             day.Click();
                             break;
                         }
-                    Assert.IsTrue(avail, "'" + toDay + "' not found");
+                    Assert.IsTrue(avail, "'" + fromDay + "' not found");
                     Thread.Sleep(1000);
-                    Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']").Contains(toDay), "to Day was not set");
                 }
-            }
 
-            IList<IWebElement> dateRangeTypeColl = driver._findElements("xpath", "//cft-field-editor-timeframe-calendar//ul/li");
-            avail = false;
-            foreach (IWebElement dateRangeType in dateRangeTypeColl)
-                if (dateRangeType.Text.Contains("Custom Range"))
+                DateTime date2 = DateTime.Today;
+                if (toDate.Equals(""))
                 {
-                    avail = true;
-                    Assert.IsTrue(dateRangeType.GetAttribute("class").Contains("active"), "Custom Range Type is not selected");
+                    toDate = date2.ToString("MM/dd/yyyy");
+                    Console.WriteLine("toDate: " + toDate);
                 }
-            Assert.IsTrue(avail, "'Custom Range' not found");
+                else
+                {
+                    Assert.IsTrue(DateTime.TryParse(toDate, out date2), "To Date Conversion Failed");
+                    int iToYear = date1.Year;
+                    int iToDay = date1.Day;
 
-            string dateRange = date1.ToString("MM/dd/YYYY") + " to " + date2.ToString("MM/dd/YYYY");
-            if (dateRange.ToCharArray()[0] == '0')
-                dateRange = dateRange.Substring(1);
-            if (dateRange.ToCharArray()[dateRange.Length - 10] == '0')
-                dateRange = dateRange.Substring(dateRange.Length - 10, 1);
+                    string toYear = iToYear.ToString();
+                    string toMonth = date1.ToString("MMM");
+                    string toDay = iToDay.ToString();
+
+                    Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]"), "Year Field not present in second Calendar");
+                    if (!driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(toYear))
+                    {
+                        driver._click("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]");
+                        Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option"), "to Year DDL not present");
+                        IList<IWebElement> yearDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option");
+                        avail = false;
+                        foreach (IWebElement yearDDL in yearDDLCollection)
+                            if (yearDDL.Text.Contains(toYear))
+                            {
+                                avail = true;
+                                yearDDL.Click();
+                                break;
+                            }
+                        Assert.IsTrue(avail, "'" + toYear + "' is too Old a date!");
+                        Thread.Sleep(1000);
+                        Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'yearselect')]/option[@selected]").Contains(toYear), "to Year was not set");
+                    }
+
+                    Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]"), "Month Field not present in second Calendar");
+                    if (!driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(toMonth))
+                    {
+                        driver._click("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]");
+                        Assert.IsTrue(driver._waitForElement("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option"), "to Year DDL not present");
+                        IList<IWebElement> monthDDLCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option");
+                        avail = false;
+                        foreach (IWebElement monthDDL in monthDDLCollection)
+                            if (monthDDL.Text.Contains(toMonth))
+                            {
+                                avail = true;
+                                monthDDL.Click();
+                                break;
+                            }
+                        Assert.IsTrue(avail, "'" + toMonth + "' not found");
+                        Thread.Sleep(1000);
+                        Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//th/select[contains(@class, 'monthselect')]/option[@selected]").Contains(toMonth), "to Month was not set");
+                    }
+
+                    Assert.IsTrue(driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[contains(@class,'available') and not(contains(@class, 'off'))]"), "Days Selector not present in second Calendar");
+                    if (!driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']") || (driver._isElementPresent("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']") && !driver._getText("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']").Equals(toDay)))
+                    {
+                        IList<IWebElement> daysCollection = driver._findElements("xpath", "//div[contains(@class, 'second')]//td[contains(@class,'available') and not(contains(@class, 'off'))]");
+                        avail = false;
+                        foreach (IWebElement day in daysCollection)
+                            if (day.Text.Contains(toDay))
+                            {
+                                avail = true;
+                                day.Click();
+                                break;
+                            }
+                        Assert.IsTrue(avail, "'" + toDay + "' not found");
+                        Thread.Sleep(1000);
+                        Assert.IsTrue(driver._getText("xpath", "//div[contains(@class, 'second')]//td[@class='available active start-date']").Contains(toDay), "to Day was not set");
+                    }
+                }
+
+                IList<IWebElement> dateRangeTypeColl = driver._findElements("xpath", "//cft-field-editor-timeframe-calendar//ul/li");
+                avail = false;
+                foreach (IWebElement dateRangeType in dateRangeTypeColl)
+                    if (dateRangeType.Text.Contains("Custom Range"))
+                    {
+                        avail = true;
+                        Assert.IsTrue(dateRangeType.GetAttribute("class").Contains("active"), "Custom Range Type is not selected");
+                    }
+                Assert.IsTrue(avail, "'Custom Range' not found");
+
+                string dateRange = date1.ToString("MM/dd/YYYY") + " to " + date2.ToString("MM/dd/YYYY");
+                if (dateRange.ToCharArray()[0] == '0')
+                    dateRange = dateRange.Substring(1);
+                if (dateRange.ToCharArray()[dateRange.Length - 10] == '0')
+                    dateRange = dateRange.Substring(dateRange.Length - 10, 1);
+            }
 
             Results.WriteStatus(test, "Pass", "Set, Custom Date Range as '" + fromDate + "' to '" + toDate + "'.");
             return new Search(driver, test);
