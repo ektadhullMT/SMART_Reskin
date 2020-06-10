@@ -14,6 +14,7 @@ using OpenQA.Selenium.Interactions;
 using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace SMART_AUTO
 {
@@ -181,8 +182,12 @@ namespace SMART_AUTO
                 {
                     avail = true;
                     ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", cardButton);
+                    ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollBy(0,-100)");
                     Thread.Sleep(500);
-                    cardButton.Click();
+                    //Actions action = new Actions(driver);
+                    //action.MoveToElement(cardButton).Click().Perform();
+                    driver._clickByJavaScriptExecutor("//slide[@aria-hidden='false']//div[@class='row']/div[" + i + "]//div[contains(@class, 'card-body')]//button[text()='" + buttonName + "']");
+                    //cardButton.Click();
                     break;
                 }
             Assert.IsTrue(avail, "'" + buttonName + "' button not found on carousel");
@@ -1106,7 +1111,7 @@ namespace SMART_AUTO
             Assert.IsTrue(avail, "'" + detailName + "' not found.");
 
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-modal-footer//button[text()='Close']"), "'Close' button not present on Creative Details Popup");
-            driver._click("xpath", "//cft-domain-item-modal-footer//button[text()='Close']");
+            driver._clickByJavaScriptExecutor( "//cft-domain-item-modal-footer//button[text()='Close']");
 
             Results.WriteStatus(test, "Pass", "Got, Value '" + detailValue + "' respective to '" + detailName + "' from Details Popup");
             return detailValue;
@@ -1119,22 +1124,22 @@ namespace SMART_AUTO
         ///<returns></returns>
         public Carousels VerifySortingOnCarousel(string criterion)
         {
+            ((IJavaScriptExecutor)driver).ExecuteScript("document.body.style.zoom = '0.9'");
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//label/span[text()='Sorted by:']"), "'Sorted by' label not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//label[2]/input[@name='sortField']"), "'Spend' radio button not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//label/span[text()=' Spend']"), "'Spend' label not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//label[3]/input[@name='sortField']"), "'First Run Date' radio button not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//label/span[text()=' First Run Date']"), "'First Run Date' label not present");
+            Thread.Sleep(2000);
+            driver._scrollintoViewElement("xpath", "//cft-domain-item-carousel//label[2]/input[@name='sortField']");
 
             if (criterion.ToLower().Equals("spend"))
             {
-                driver._click("xpath", "//cft-domain-item-carousel//label[2]/input[@name='sortField']");
+                driver._clickByJavaScriptExecutor("//cft-domain-item-carousel//label[2]/input[@name='sortField']");
                 criterion = "Total Spend";
             }
             else
-            {
-                driver._click("xpath", "//cft-domain-item-carousel//label[3]/input[@name='sortField']");
                 criterion = "First Run";
-            }
 
             Thread.Sleep(1000);
             Assert.IsTrue(driver._waitForElement("xpath", "//cft-domain-item-carousel//slide[@aria-hidden='false']//cft-domain-item-thumbnail-short/div"), "'Carousel Cards' not present on Carousel");
@@ -1142,7 +1147,9 @@ namespace SMART_AUTO
             Assert.IsTrue(driver._isElementPresent("xpath", "//cft-domain-item-carousel//slide"), "Slides not present in carousels");
             IList<IWebElement> slidesCollection = driver._findElements("xpath", "//cft-domain-item-carousel//slide");
             int i = 0;
+            Actions action = new Actions(driver);
             string[] detailValues = new string[0];
+            ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", carouselsCollection[0]);
             foreach (IWebElement slide in slidesCollection)
             {
                 int newLength = detailValues.Length + carouselsCollection.Count;
@@ -1150,24 +1157,65 @@ namespace SMART_AUTO
                 foreach (IWebElement carousel in carouselsCollection)
                 {
                     clickButtonOnCarousel("Details");
-                    detailValues[i] = getSpecificDetailsFromCarousel(criterion);
-                    VerifySelectAdFunctionality(false);
+                    string dataFromPopup = getSpecificDetailsFromCarousel(criterion);
+                    Console.WriteLine(dataFromPopup);
+
+                    IList<IWebElement> detailButtonColl = carousel._findElementsWithinElement("xpath", ".//button[contains(@class, 'disabled')]/span[@class]");
+                    detailValues[i] = detailButtonColl[0].Text;
+                    Console.WriteLine(detailValues[i]);
+                    if (dataFromPopup.Contains("$"))
+                    {
+                        while (dataFromPopup.IndexOf(",") > -1)
+                            dataFromPopup = dataFromPopup.Remove(dataFromPopup.IndexOf(","), 1);
+                        dataFromPopup = dataFromPopup.Substring(1);
+                        Console.WriteLine(dataFromPopup);
+                        Assert.IsTrue(double.TryParse(dataFromPopup, out double temp), "Couldn't convert '" + dataFromPopup + "' to double.");
+                        if (temp > 999)
+                            temp = temp / 1000;
+                        temp = Math.Round(temp, 1);
+                        Console.WriteLine(temp);
+                        dataFromPopup = temp.ToString();
+                        if(detailValues[i].Contains(dataFromPopup))
+                            Results.WriteStatus(test, "Pass", "Total Spend from Details Popup and Carousel Card match");
+                        else
+                            Results.WriteStatus(test, "Pass", "Total Spend from Details Popup and Carousel Card do not match");
+                    }
+                    else
+                    {
+                        dataFromPopup = dataFromPopup.Substring(0, dataFromPopup.IndexOf(",") + 6);
+                        Assert.IsTrue(DateTime.TryParseExact(detailValues[i], "M/d/yy",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None, out DateTime temp1), "Couldn't convert '" + detailValues[i] + "' to DateTime.");
+                        Assert.IsTrue(DateTime.TryParse(dataFromPopup, out DateTime temp2), "Couldn't convert '" + dataFromPopup + "' to DateTime.");
+                        Assert.AreEqual(temp1, temp2, "First Run Dates from Details Popup and Carousel Card do not match");
+                    }
+                    Thread.Sleep(1000);
+                    IList<IWebElement> checkBoxColl = carousel._findElementsWithinElement("xpath", ".//label");
+                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", checkBoxColl[0]);
+                    Thread.Sleep(500);
                     ++i;
                 }
-                GetImageSourceFromCarouselAndClickSlider(true, true);
+                driver._clickByJavaScriptExecutor("//cft-domain-item-carousel//a[contains(@class, 'right')]");
+                Thread.Sleep(2000);
                 carouselsCollection = driver._findElements("xpath", "//cft-domain-item-carousel//slide[@aria-hidden='false']//cft-domain-item-thumbnail-short/div");
             }
-            if(criterion.ToLower().Equals("first run"))
+
+            if (criterion.ToLower().Equals("first run"))
             {
+                Assert.IsTrue(detailValues[0].Contains("/"), "'First Run Date' is not displayed on carousel cards.");
+                Results.WriteStatus(test, "Pass", "'First Run Date' is displayed on carousel cards.");
+
                 DateTime[] dateList = new DateTime[detailValues.Length];
                 for(int j = 0; j < detailValues.Length - 1; j++)
                 {
-                    int index = detailValues[j].IndexOf(", ") + 6;
-                    Console.WriteLine(j + ". Detail Value: " + detailValues[j]);
-                    string temp = detailValues[j].Substring(0, index);
+                    string temp = detailValues[j];
+                    while (temp.IndexOf("/") > -1)
+                        temp = temp.Replace("/", "-");
                     Console.WriteLine("Temp: " + temp);
                     DateTime date = DateTime.Today;
-                    Assert.IsTrue(DateTime.TryParse(temp, out date), "Conversion to date failed");
+                    Assert.IsTrue(DateTime.TryParseExact(temp, "M-d-yy",
+                       CultureInfo.InvariantCulture,
+                       DateTimeStyles.None, out date), "Conversion to date failed");
                     dateList[j] = date;
                     Console.WriteLine("Date: " + date);
                     Console.WriteLine("Date List: " + dateList[j]);
@@ -1180,12 +1228,15 @@ namespace SMART_AUTO
             }
             else
             {
+                Assert.IsTrue(detailValues[0].Contains("$"), "'Spend' is not displayed on carousel cards.");
+                Results.WriteStatus(test, "Pass", "'Spend' is displayed on carousel cards.");
+
                 Decimal[] spendList = new Decimal[detailValues.Length];
                 for (int j = 0; j < detailValues.Length; j++)
                 {
                     Console.WriteLine(j + ". Detail Value: " + detailValues[j]);
                     int index = detailValues[j].Length - 1;
-                    string temp = detailValues[j].Substring(1, index);
+                    string temp = detailValues[j].Substring(1, index-1);
                     Console.WriteLine("Temp: " + temp);
                     Decimal spend = 0;
                     Assert.IsTrue(Decimal.TryParse(temp, out spend), "Conversion to Decimal failed");

@@ -722,6 +722,53 @@ namespace SMART_AUTO.SMART_AUTO
             driver.Quit();
         }
 
+        [Test]
+        [TestCaseSource(typeof(Base), "BrowserToRun")]
+        public void TC023_VerifyCarouselWhenTheDefaultSelectedSortingOptionIsFirstRunDate(String Bname)
+        {
+            TestFixtureSetUp(Bname, "TC023-Verify Carousel  when the default selected sorting option is First Run date");
+            try
+            {
+                loginPage.navigateToLoginPage().VerifyLoginPageScreenInDetail();
+                loginPage.loginUsingValidEmailIdAndPassword();
+
+                homePage.newVerifyHomePage();
+                homePage.VerifyAccountOrSwitchIfRequired();
+                homePage.selectOptionFromSideNavigationBar("QA Testing - Brand - Weekly Report");
+                carousels.VerifyCarousels();
+                carousels.VerifySortingOnCarousel("First Run Date");
+            }
+            catch (Exception e)
+            {
+                Logging.LogStop(this.driver, test, e, MethodBase.GetCurrentMethod(), Bname + "_TestSuite03_Reskin_Carousels_TC023 ");
+                throw;
+            }
+            driver.Quit();
+        }
+
+        [Test]
+        [TestCaseSource(typeof(Base), "BrowserToRun")]
+        public void TC024_VerifyCarouselWhenTheDefaultSelectedSortingOptionIsFirstRunDate(String Bname)
+        {
+            TestFixtureSetUp(Bname, "TC024-Verify Carousel  when the default selected sorting option is Spend");
+            try
+            {
+                loginPage.navigateToLoginPage().VerifyLoginPageScreenInDetail();
+                loginPage.loginUsingValidEmailIdAndPassword();
+
+                homePage.newVerifyHomePage();
+                homePage.VerifyAccountOrSwitchIfRequired();
+                homePage.selectOptionFromSideNavigationBar("QA Testing - Brand - Weekly Report");
+                carousels.VerifyCarousels();
+                carousels.VerifySortingOnCarousel("Spend");
+            }
+            catch (Exception e)
+            {
+                Logging.LogStop(this.driver, test, e, MethodBase.GetCurrentMethod(), Bname + "_TestSuite03_Reskin_Carousels_TC024 ");
+                throw;
+            }
+            driver.Quit();
+        }
 
 
         #endregion

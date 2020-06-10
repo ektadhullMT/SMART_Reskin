@@ -54,6 +54,12 @@ namespace SMART_AUTO
         /// <returns></returns>
         public Login VerifyLoginPageScreenInDetail()
         {
+            if(driver._waitForElement("xpath", "//img[@alt='Numerator Ad Intel']"))
+            {
+                Assert.IsTrue(driver._isElementPresent("xpath", "//button[text()='Legacy Log In']"), "'Legacy Log In' button not present.");
+                driver._click("xpath", "//button[text()='Legacy Log In']");
+
+            }
             Assert.IsTrue(driver._waitForElement("xpath", "//img[@class='CFT-login-logo']", 40), "Numerator Logo not found on Page.");
             Assert.AreEqual(true, driver._isElementPresent("xpath", "//p[text() = 'Sign in to your Numerator account']"), "'Sign in to your Numerator account' Label not match.");
 

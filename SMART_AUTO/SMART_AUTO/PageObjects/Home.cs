@@ -379,7 +379,7 @@ namespace SMART_AUTO
             driver._waitForElementToBeHidden("xpath", "//p[@class='lead' and contains(text(),'Loading')]");
             Assert.AreEqual(0, loadingCount.Count, "Home Page Not Load Properly.");
 
-            Assert.AreEqual(true, driver._isElementPresent("xpath", "//cft-saved-search-dropdown//button"), "Dashboard Page not Display Properly.");
+            Assert.AreEqual(true, driver._isElementPresent("xpath", "//cft-saved-search-dropdown//button"), "Dashboard Page not Displayed Properly.");
             Results.WriteStatus(test, "Pass", "Verified, Home Page Screen.");
 
             VerifyRecordsOnReportScreen();
@@ -435,7 +435,7 @@ namespace SMART_AUTO
             //if(!driver._waitForElement("xpath", "//div[@class = 'd-flex NU-panel-chart']//div[@class = 'NU-chart-message']"))
             //    Assert.IsTrue(driver._waitForElement("xpath", "//div[@class = 'd-flex NU-panel-chart']//*[name()='svg']"), "Creatives Chart not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//div[@class='flex-grow-1']//cft-scheduled-export-modal//button"), "Schedule Alert Button not present");
-            Assert.IsTrue(driver._isElementPresent("xpath", "//div[@class='flex-grow-1']//button[@tooltip='Reset this search']"), "Reset Button not present");
+            Assert.IsTrue(driver._isElementPresent("xpath", "//div[@class='flex-grow-1']//button[@aria-describedby='tooltip-1']"), "Reset Button not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//div[@class='flex-grow-1']//cft-search-filter-summary/div/*/*"), "Summary Tags not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//button[@tooltip='Field Options']"), "Field Options Button not present");
             Assert.IsTrue(driver._isElementPresent("xpath", "//button[@tooltip='Export Results']"), "Export Button not present");
